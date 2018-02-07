@@ -4,9 +4,47 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>simplenote</title>
+    <script src="https://unpkg.com/vue"></script>
   </head>
   <body>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
+    <div id="app">
+      <ul>
+        <li v-for="note in notes">
+          <input type="number" v-model.number="note.id"/>
+            {{ note }}
+          <span v-if="note.id >= 3">
+            -- Too late.!!!@
+          </span>
+          <button @click="note.id += 10">
+            Add
+          </button>
+        </li>
+      </ul>
+      <h2>
+        Total Ids {{ totalIds }}
+      </h2>
+    </div>
+    <script>
+      const app = new Vue({
+        el: '#app',
+        data: {
+          notes: []
+        },
+        computed: {
+          totalIds () {
+            return this.notes.reduce((sum, note) => {
+              return sum + note.id
+            }, 0)
+          }
+        },
+        created () {
+          fetch('http://localhost:5001/api/v1/notes/')
+            .then(response => response.json())
+            .then(json => {
+              this.notes = json
+            })
+        }
+      })
+    </script>
   </body>
 </html>
